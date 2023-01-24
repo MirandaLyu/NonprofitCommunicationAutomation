@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>WriteTemplateFile.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Assignment8</a> &gt; <a href="index.source.html" class="el_package">problem1</a> &gt; <span class="el_source">WriteTemplateFile.java</span></div><h1>WriteTemplateFile.java</h1><pre class="source lang-java linenums">package problem1;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+public class WriteTemplateFile {
+
+<span class="fc" id="L15">  public WriteTemplateFile(ReadInformation readFile, Path path, List&lt;String&gt; tempLine, String nameStartsWith) throws IOException {</span>
+<span class="fc" id="L16">    int i = 0;</span>
+<span class="fc" id="L17">    List&lt;String[]&gt; listOfString = readFile.getListOfString();</span>
+    try {
+<span class="fc bfc" id="L19" title="All 2 branches covered.">      while (i &lt; listOfString.size()) {</span>
+<span class="fc" id="L20">        String[] infoDetail = listOfString.get(i);</span>
+<span class="fc" id="L21">        generateEmailOrLetter(tempLine, readFile, path, nameStartsWith, infoDetail);</span>
+<span class="fc" id="L22">        i++;</span>
+<span class="fc" id="L23">      }</span>
+<span class="nc" id="L24">    } catch (keywordNotExistException e) {</span>
+<span class="nc" id="L25">    System.out.println(e.getMessage());</span>
+<span class="fc" id="L26">    }</span>
+<span class="fc" id="L27">  }</span>
+
+  private static List&lt;String&gt; generateEmailOrLetter(List&lt;String&gt; template, ReadInformation readFile, Path path,
+      String nameStartsWith, String[] infoDetail) throws keywordNotExistException {
+<span class="fc" id="L31">    List&lt;String&gt; list = new ArrayList&lt;&gt;();</span>
+
+<span class="fc" id="L33">   Map&lt;String, Integer&gt; keyWord2Index = readFile.getKeyWord2Index();</span>
+
+<span class="fc bfc" id="L35" title="All 2 branches covered.">    for (String temp : template) {</span>
+<span class="fc" id="L36">      String line = convertTemplate(temp, Arrays.asList(infoDetail), keyWord2Index);</span>
+<span class="fc" id="L37">      list.add(line);</span>
+<span class="fc" id="L38">    }</span>
+
+<span class="fc" id="L40">    String fileName = nameStartsWith + infoDetail[keyWord2Index.get(&quot;[[first_name]]&quot;)] + &quot;_&quot; + infoDetail[keyWord2Index.get(&quot;[[last_name]]&quot;)];</span>
+
+<span class="fc" id="L42">    File file = new File(path.toFile(), fileName);</span>
+<span class="fc" id="L43">    writeFile(list, file);</span>
+<span class="fc" id="L44">    return list;</span>
+  }
+
+  private static void writeFile(List&lt;String&gt; contents, File fileName) {
+<span class="fc" id="L48">    try (PrintWriter printWriter = new PrintWriter(new FileWriter(fileName))) {</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">      for (String content : contents) {</span>
+<span class="fc" id="L50">        printWriter.print(content + &quot;\n&quot;);</span>
+<span class="fc" id="L51">      }</span>
+<span class="nc" id="L52">    } catch (IOException e) {</span>
+<span class="nc" id="L53">      e.printStackTrace();</span>
+<span class="fc" id="L54">    }</span>
+<span class="fc" id="L55">  }</span>
+
+  private static List&lt;String&gt; extractKeyWord(String line) {
+<span class="fc" id="L58">    int startIndex = 0;</span>
+<span class="fc" id="L59">    List&lt;String&gt; list = new ArrayList&lt;&gt;();</span>
+    while (true) {
+<span class="fc" id="L61">      int i1 = line.indexOf(&quot;[[&quot;, startIndex);</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">      if (i1 == -1)</span>
+<span class="fc" id="L63">        break;</span>
+<span class="fc" id="L64">      int i2 = line.indexOf(&quot;]]&quot;, i1);</span>
+<span class="pc bpc" id="L65" title="1 of 2 branches missed.">      if (i2 == -1)</span>
+<span class="nc" id="L66">        break;</span>
+<span class="fc" id="L67">      String key = line.substring(i1, i2 + 2);</span>
+<span class="fc" id="L68">      list.add(key);</span>
+<span class="fc" id="L69">      startIndex = i2 + 2;</span>
+<span class="fc" id="L70">    }</span>
+<span class="fc" id="L71">    return list;</span>
+  }
+
+  private static String convertTemplate(String tempLine, List&lt;String&gt; fileLine, Map&lt;String, Integer&gt; keyWord2Index)
+      throws keywordNotExistException {
+<span class="fc" id="L76">    List&lt;String&gt; keyWord = extractKeyWord(tempLine);</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">    if (keyWord.isEmpty())</span>
+<span class="fc" id="L78">      return tempLine;</span>
+<span class="fc" id="L79">    String ret = tempLine;</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">    for (String key : keyWord) {</span>
+<span class="pc bpc" id="L81" title="1 of 2 branches missed.">      if (!keyWord2Index.containsKey(key)) {</span>
+<span class="nc" id="L82">        throw new keywordNotExistException(&quot;ERROR: &quot; + key + &quot; not exist in csv file&quot;);</span>
+      }
+<span class="fc" id="L84">      int index = keyWord2Index.get(key);</span>
+<span class="fc" id="L85">      String content = fileLine.get(index);</span>
+<span class="fc" id="L86">      ret = ret.replace(key, content);</span>
+<span class="fc" id="L87">    }</span>
+<span class="fc" id="L88">    return ret;</span>
+  }
+
+  @Override
+  public String toString() {
+<span class="fc" id="L93">    return &quot;WriteTemplateFile{}&quot;;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

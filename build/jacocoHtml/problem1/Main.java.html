@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Main.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Assignment8</a> &gt; <a href="index.source.html" class="el_package">problem1</a> &gt; <span class="el_source">Main.java</span></div><h1>Main.java</h1><pre class="source lang-java linenums">package problem1;
+
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+
+/**
+ * Main class that checks the command arguments, read and write files with given information
+ */
+<span class="nc" id="L11">public class Main {</span>
+
+    /**
+     * Main to check the command argument and read the given csv file
+     * then write files to the given output path
+     * @param args arguments represented as String[]
+     */
+    public static void main(String[] args) {
+        try {
+            // Check the command argument
+<span class="nc" id="L21">            CommandLineParser command = new CommandLineParser(args);</span>
+<span class="nc" id="L22">            Path path = Paths.get(command.getOutputPath());</span>
+            // Read the given csv file
+<span class="nc" id="L24">            ReadInformation readFile = new ReadInformation(command.getCsvFilePath());</span>
+
+<span class="nc" id="L26">            String nameStartsWith = null;</span>
+<span class="nc" id="L27">            List&lt;String&gt; tempLine = null;</span>
+
+            // If --email-template is not null create email files in given output path
+<span class="nc bnc" id="L30" title="All 2 branches missed.">            if (command.getEmailTemplate() != null) {</span>
+<span class="nc" id="L31">                nameStartsWith = &quot;email_&quot;;</span>
+<span class="nc" id="L32">                tempLine = readFile.readTemplateFile(command.getEmailTemplate());</span>
+<span class="nc" id="L33">                new WriteTemplateFile(readFile, path, tempLine, nameStartsWith);</span>
+            }
+
+            // If --letter-template is not null create email files in given output path
+<span class="nc bnc" id="L37" title="All 2 branches missed.">            if (command.getLetterTemplate() != null) {</span>
+<span class="nc" id="L38">                nameStartsWith = &quot;letter_&quot;;</span>
+<span class="nc" id="L39">                tempLine = readFile.readTemplateFile(command.getLetterTemplate());</span>
+<span class="nc" id="L40">                new WriteTemplateFile(readFile, path, tempLine, nameStartsWith);</span>
+            }
+<span class="nc" id="L42">        } catch (InvalidCombinationArgument e) {</span>
+<span class="nc" id="L43">            System.out.println(e.getMessage());</span>
+<span class="nc" id="L44">        } catch (IOException e) {</span>
+<span class="nc" id="L45">            e.printStackTrace();</span>
+<span class="nc" id="L46">        }</span>
+<span class="nc" id="L47">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

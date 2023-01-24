@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CommandLineParser.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Assignment8</a> &gt; <a href="index.source.html" class="el_package">problem1</a> &gt; <span class="el_source">CommandLineParser.java</span></div><h1>CommandLineParser.java</h1><pre class="source lang-java linenums">package problem1;
+
+
+import java.nio.file.Files;
+import java.nio.file.*;
+
+/**
+ * Class of CommandLineParser to track the arguments are valid
+ */
+public class CommandLineParser {
+<span class="fc" id="L11">    private String emailTemplate = null;</span>
+<span class="fc" id="L12">    private String letterTemplate = null;</span>
+<span class="fc" id="L13">    private String outputPath = null;</span>
+<span class="fc" id="L14">    private String csvFilePath = null;</span>
+
+<span class="fc" id="L16">    private Boolean outputExist = false;</span>
+<span class="fc" id="L17">    private Boolean csvOptionExist = false;</span>
+<span class="fc" id="L18">    private Boolean emailOptionExist = false;</span>
+<span class="fc" id="L19">    private Boolean emailTemplateOptionExist = false;</span>
+<span class="fc" id="L20">    private Boolean letterOptionExist = false;</span>
+<span class="fc" id="L21">    private Boolean letterTemplateOptionExist = false;</span>
+
+    /**
+     * Method to check the path of the folder or the file is valid and
+     * get the path if it is valid
+     * @param args argument as String[]
+     * @param index index as integer
+     * @return Boolean true if the folder or the file exist in the path
+     * @throws InvalidCombinationArgument if path to the folder or file doesn't exist
+     */
+    private Boolean checkAndGetPath(String[] args, int index) throws InvalidCombinationArgument {
+<span class="fc" id="L32">        Path path = Paths.get(args[index+1]);</span>
+<span class="pc bpc" id="L33" title="1 of 4 branches missed.">        if ((index + 1) &lt; args.length &amp;&amp; Files.exists(path)) {</span>
+<span class="fc" id="L34">            return true;</span>
+<span class="fc" id="L35">        } else throw new InvalidCombinationArgument(args[index+1] + &quot;: Path to the folder or file is invalid&quot;);</span>
+    }
+
+    /**
+     * Method to check which options appeared in the arguments
+     * and depend on the condition, check from checkAndGetPath
+     * @param args argument as String[]
+     * @throws InvalidCombinationArgument if checkAndGetPath is invalid
+     */
+    private void checkOptions(String[] args) throws InvalidCombinationArgument {
+<span class="fc bfc" id="L45" title="All 2 branches covered.">        for(int i = 0; i &lt; args.length; i++) {</span>
+            // Check if email option appeared
+<span class="fc bfc" id="L47" title="All 2 branches covered.">            if(args[i].equals(CmdLineArgs.EMAIL)) {</span>
+<span class="fc" id="L48">                this.emailOptionExist = true;</span>
+            }
+            // Check if Letter option appeared
+<span class="fc bfc" id="L51" title="All 2 branches covered.">            if(args[i].equals(CmdLineArgs.LETTER)) {</span>
+<span class="fc" id="L52">                this.letterOptionExist = true;</span>
+            }
+            // Check if Email template option appeared
+            // Get the path of the email template
+<span class="fc bfc" id="L56" title="All 2 branches covered.">            if(args[i].equals(CmdLineArgs.EMAIL_TEMPLATE)) {</span>
+<span class="fc" id="L57">                this.emailTemplateOptionExist = true;</span>
+<span class="fc" id="L58">                this.checkAndGetPath(args, i);</span>
+<span class="fc" id="L59">                this.emailTemplate = args[i + 1];</span>
+            }
+            // Check if Letter template option appeared
+            // Get the path of the Letter template
+<span class="pc bpc" id="L63" title="1 of 2 branches missed.">            if(args[i].equals(CmdLineArgs.LETTER_TEMPLATE)) {</span>
+<span class="nc" id="L64">                this.letterTemplateOptionExist = true;</span>
+<span class="nc" id="L65">                this.checkAndGetPath(args, i);</span>
+<span class="nc" id="L66">                this.letterTemplate = args[i + 1];</span>
+
+            }
+            // Check if Output option appeared
+            // Get the path of the output directory
+<span class="fc bfc" id="L71" title="All 2 branches covered.">            if(args[i].equals(CmdLineArgs.OUTPUT_DIR)) {</span>
+<span class="fc" id="L72">                this.outputExist = true;</span>
+<span class="fc" id="L73">                this.checkAndGetPath(args, i);</span>
+<span class="fc" id="L74">                this.outputPath = args[i + 1];</span>
+            }
+            // Check if CSV file option appeared
+            // Get the path of the CSV file
+<span class="fc bfc" id="L78" title="All 2 branches covered.">            if(args[i].equals(CmdLineArgs.CSV_FILE)) {</span>
+<span class="fc" id="L79">                this.csvOptionExist = true;</span>
+<span class="fc" id="L80">                this.checkAndGetPath(args, i);</span>
+<span class="fc" id="L81">                this.csvFilePath = args[i + 1];</span>
+            }
+        }
+<span class="fc" id="L84">    }</span>
+
+    /**
+     * Method to check argument is valid or not
+     * @param args argument as String[]
+     * @throws InvalidCombinationArgument if output option, csv option, doesn't exist
+     * or if both, --email option and --email--template, options are not provided
+     * or if both, --letter option and --letter--template, options are not provided
+     */
+<span class="fc" id="L93">    public CommandLineParser(String[] args) throws InvalidCombinationArgument {</span>
+<span class="fc" id="L94">        this.checkOptions(args);</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">        if(!this.outputExist) {</span>
+<span class="fc" id="L96">            throw new InvalidCombinationArgument(&quot;Output option are required&quot;);</span>
+        }
+<span class="pc bpc" id="L98" title="1 of 2 branches missed.">        if(!this.csvOptionExist) {</span>
+<span class="nc" id="L99">            throw new InvalidCombinationArgument(&quot;CSV file option are required&quot;);</span>
+        }
+<span class="fc bfc" id="L101" title="All 4 branches covered.">        if ((this.emailOptionExist &amp;&amp; !this.emailTemplateOptionExist) ||</span>
+<span class="pc bpc" id="L102" title="1 of 4 branches missed.">            (!this.emailOptionExist &amp;&amp; this.emailTemplateOptionExist)) {</span>
+<span class="fc" id="L103">            throw new InvalidCombinationArgument(&quot;After the --email option, then --email-template option must be provided. Required both together&quot;);</span>
+        }
+<span class="pc bpc" id="L105" title="1 of 4 branches missed.">        if ((this.letterOptionExist &amp;&amp; !this.letterTemplateOptionExist) ||</span>
+<span class="pc bpc" id="L106" title="2 of 4 branches missed.">            (!this.letterOptionExist &amp;&amp; this.letterTemplateOptionExist)) {</span>
+<span class="fc" id="L107">            throw new InvalidCombinationArgument(&quot;After the --letter, then --letter-template option must be provided. Required both together&quot;);</span>
+        }
+<span class="fc" id="L109">    }</span>
+
+    /**
+     * Getter for emailTemplate
+     * @return emailTemplate as String
+     */
+    public String getEmailTemplate() {
+<span class="fc" id="L116">        return emailTemplate;</span>
+    }
+
+    /**
+     * Getter for letterTemplate
+     * @return letterTemplate as String
+     */
+    public String getLetterTemplate() {
+<span class="fc" id="L124">        return letterTemplate;</span>
+    }
+
+    /**
+     * Getter for outputPath
+     * @return outputPath as String
+     */
+    public String getOutputPath() {
+<span class="fc" id="L132">        return outputPath;</span>
+    }
+
+    /**
+     * Getter for csvFilePath
+     * @return csvFilePath as String
+     */
+    public String getCsvFilePath() {
+<span class="fc" id="L140">        return csvFilePath;</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="fc" id="L145">        return &quot;CommandLineParser{&quot; +</span>
+            &quot;emailPath='&quot; + emailTemplate + '\'' +
+            &quot;, letterPath='&quot; + letterTemplate + '\'' +
+            &quot;, outputPath='&quot; + outputPath + '\'' +
+            &quot;, csvFilePath='&quot; + csvFilePath + '\'' +
+            '}';
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
